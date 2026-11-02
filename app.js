@@ -164,6 +164,12 @@
   }
 
   function loadDashboard() {
+    ['stat-ingresos', 'stat-gastos', 'stat-disponible', 'stat-reserva', 'stat-total-disponible-reserva', 'stat-pendientes'].forEach(function (id) {
+      var el = document.getElementById(id);
+      if (el) el.textContent = '…';
+    });
+    document.getElementById('chart').innerHTML = '<p class="muted">Cargando…</p>';
+
     apiGet('resumen').then(function (data) {
       var hoy = new Date().getMonth();
       var mesActual = data.meses[hoy];
@@ -171,6 +177,7 @@
       document.getElementById('stat-gastos').textContent = money(mesActual.gastos);
       document.getElementById('stat-disponible').textContent = money(mesActual.disponible);
       document.getElementById('stat-reserva').textContent = money(mesActual.reserva);
+      document.getElementById('stat-total-disponible-reserva').textContent = money(mesActual.disponible + mesActual.reserva);
       document.getElementById('stat-pendientes').textContent = money(data.facturasPendientes);
       document.getElementById('anio-actual').textContent = data.anio;
       renderChart(data.meses);
@@ -183,8 +190,10 @@
 
   // ---------- Listas (Ingresos / Gastos) ----------
   function loadLista(sheet) {
+    var contId = sheet === 'Ingresos' ? 'lista-ingresos' : 'lista-gastos';
+    document.getElementById(contId).innerHTML = '<p class="muted">Cargando…</p>';
+
     apiGet('list', { sheet: sheet }).then(function (rows) {
-      var contId = sheet === 'Ingresos' ? 'lista-ingresos' : 'lista-gastos';
       var cont = document.getElementById(contId);
       cont.innerHTML = '';
       if (!rows.length) {
